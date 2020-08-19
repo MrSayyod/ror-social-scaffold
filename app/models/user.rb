@@ -9,4 +9,41 @@ class User < ApplicationRecord
   has_many :posts
   has_many :comments, dependent: :destroy
   has_many :likes, dependent: :destroy
+  has_many :friendships, dependent: :destroy
+  has_many :reverse_friendships, class_name: "Friendship", foreign_key: "friend_id"
+
+  def friends
+    friends_array = friendships.map { | friendship | friendship.friend if friendship.status }
+    reverse_friends_array = friendships.map { | friendship | friendship.user if friendship.status }
+    all_friends_array = friends_array + reverse_friends_array
+    all_friends_array.compact
+  end
+
+  def pending_requests
+    friendships.map { | friendship | friendship.friend unless friendship.status }.compact
+  end
+
+  def friend_requests
+    friendships.map { | friendship | friendship.user unless friendship.status }.compact
+  end
+  
+  def confirm_friendship(user)
+    friendship = reverse_friendships.find { | f | f.user == user}
+    friendship.status = true
+    friendship.save
+  end
+
+  def reject_friendship(user)
+    friendship = reverse_friendships.find { | f | f.user == user}
+    friendship.destroy
+  end
+
+  def cancel_friendship(user)
+    friendship = friendships.find { | f | f.friend == user}
+    friendship.destroy       
+  end
+
+  def friend?(user)
+    friends.include?(user)
+  end
 end
