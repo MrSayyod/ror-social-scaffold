@@ -32,4 +32,14 @@ class User < ApplicationRecord
     friendship.status = true
     friendship.save
   end
+
+  def reject_friendship(user)
+    friendship = reverse_friendships.find { | f | f.user == user}
+    friendship.destroy
+  end
+
+  def cancel_friendship(user)
+    friendship = friendships.find { | f | f.friend == user}
+    friendship.destroy       
+  end
 end
