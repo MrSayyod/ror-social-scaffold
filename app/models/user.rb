@@ -42,4 +42,8 @@ class User < ApplicationRecord
     friendship = friendships.find { | f | f.friend == user}
     friendship.destroy       
   end
+
+  def friend?(user)
+    friends.include?(user)
+  end
 end
