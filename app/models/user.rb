@@ -9,50 +9,40 @@ class User < ApplicationRecord
   has_many :posts
   has_many :comments, dependent: :destroy
   has_many :likes, dependent: :destroy
-  has_many :friendships, dependent: :destroy
-  has_many :reverse_friendships, class_name: "Friendship", foreign_key: "friend_id"
-  has_many :pending_friendships, -> { where(status: nil) }, class_name: 'Friendship', foreign_key: :user_id
+  has_many :friendships
+  has_many :inverse_friendships, class_name: 'Friendship', foreign_key: :friend_id
+
+  has_many :pending_friendships, -> { where(status: -1) }, class_name: 'Friendship', foreign_key: :user_id
   has_many :pending_friends, through: :pending_friendships, source: :friend
-  has_many :incoming_friendships, -> { where(status: nil) }, class_name: 'Friendship', foreign_key: :friend_id
+
+  has_many :incoming_friendships, -> { where(status: -1) }, class_name: 'Friendship', foreign_key: :friend_id
   has_many :friend_requests, through: :incoming_friendships, source: :user
 
   def friends
-    friends_array = friendships.map { | friendship | friendship.friend if friendship.status }
-    reverse_friends_array = friendships.map { | friendship | friendship.user if friendship.status }
-    all_friends_array = friends_array + reverse_friends_array
-    all_friends_array.compact
-  end
-
-  def pending_requests
-    friendships.map { | friendship | friendship.friend unless friendship.status }.compact
-  end
-
-  def friend_requests
-    friendships.map { | friendship | friendship.user unless friendship.status }.compact
-  end
-  
-  def confirm_friendship(user)
-    friendship = reverse_friendships.find { | f | f.user == user}
-    friendship.status = true
-    friendship.save
-  end
-
-  def reject_friendship(user)
-    friendship = reverse_friendships.find { | f | f.user == user}
-    friendship.destroy
-  end
-
-  def cancel_friendship(user)
-    friendship = friendships.find { | f | f.friend == user}
-    friendship.destroy       
+    friends_array = []
+    friendships.map { |friendship| friends_array.push(friendship.friend) if friendship.status == 1 }
+    inverse_friendships.map { |friendship| friends_array.push(friendship.user) if friendship.status == 1 }
+    friends_array
   end
 
   def friend?(user)
     friends.include?(user)
   end
 
+  def confirm_friendship(user)
+    friendship = incoming_friendships.find_by(user_id: user)
+    friendship.update(status: 1)
+    Friendship.create(user: friendship.friend, friend: friendship.user, status: 1)
+  end
+
+  def reject_friend_request(user)
+    friend_request = inverse_friendships.find { |friendship| friendship.user == user if friendship.status == -1 }
+    friend_request.status = 0
+    friend_request.save
+  end
+
   def send_friend_request(user, friend)
-    new_friend_request = user.friendships.new(friend_id: friend.id, status: nil)
+    new_friend_request = user.friendships.new(friend_id: friend.id, status: -1)
     new_friend_request.save
   end
 end
