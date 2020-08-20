@@ -11,6 +11,10 @@ class User < ApplicationRecord
   has_many :likes, dependent: :destroy
   has_many :friendships, dependent: :destroy
   has_many :reverse_friendships, class_name: "Friendship", foreign_key: "friend_id"
+  has_many :pending_friendships, -> { where(status: nil) }, class_name: 'Friendship', foreign_key: :user_id
+  has_many :pending_friends, through: :pending_friendships, source: :friend
+  has_many :incoming_friendships, -> { where(status: nil) }, class_name: 'Friendship', foreign_key: :friend_id
+  has_many :friend_requests, through: :incoming_friendships, source: :user
 
   def friends
     friends_array = friendships.map { | friendship | friendship.friend if friendship.status }
@@ -45,5 +49,10 @@ class User < ApplicationRecord
 
   def friend?(user)
     friends.include?(user)
+  end
+
+  def send_friend_request(user, friend)
+    new_friend_request = user.friendships.new(friend_id: friend.id, status: nil)
+    new_friend_request.save
   end
 end
