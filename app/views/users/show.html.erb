@@ -1,9 +1,18 @@
 <section class="user-section">
-  <h2><%= "Name: #{@user.name}" %></h2>
+  <h2><%= "Name: #{@user.name}" %>  <%= link_to_friend_request(@user) %></h2>
   <article class="timeline">
-    <h3>Recent posts:</h3>
-    <ul class="posts">
-      <%= render @posts %>
-    </ul>
+  <div class="lists">
+  <article class="timeline">
+      <h3>Friends:</h3>
+      <% @friends.each do |friend| %>
+        <ul class="posts">
+          <li><%= link_to friend.name, friend, class: 'name-links' %>  
+          </li>
+        </ul>
+      <% end %>
+  </article>
+  <%= render_friends %>
+ </div>
+  <%= render_friends_posts(@user) %>
   </article>
 </section>
