@@ -9,7 +9,7 @@
 
 ## Live Demo
 
-TBA
+[Live version](https://desolate-shelf-81787.herokuapp.com/)
 
 
 ## Getting Started
@@ -77,7 +77,7 @@ Give a ⭐️ if you like this project!
 
 ## Acknowledgments
 
-TBA
+> - [Microverse](https://www.microverse.org/)
 
 ## 📝 License
 
