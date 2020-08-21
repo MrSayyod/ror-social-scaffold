@@ -16,18 +16,18 @@ class UsersController < ApplicationController
   def make_friend
     @friend = User.find(params[:friend_id])
     @invitation = current_user.confirm_friendship(@friend)
-    redirect_to user_path(current_user), notice: "You have become friends!"
+    redirect_to user_path(current_user), notice: 'You have become friends!'
   end
 
   def send_friend_request
     @friend = User.find(params[:friend_id])
     @send_friend_request = current_user.send_friend_request(current_user, @friend)
-    redirect_to user_path(current_user), notice: "You have sent a friend request successfully!"
+    redirect_to user_path(current_user), notice: 'You have sent a friend request successfully!'
   end
 
   def ignore_friend_request
     @requst_sender = User.find(params[:friend_id])
     @ignore_friendship = current_user.reject_friend_request(@requst_sender)
-    redirect_to user_path(current_user), alert: "You have deleted friend request!"
+    redirect_to user_path(current_user), alert: 'You have deleted friend request!'
   end
 end
