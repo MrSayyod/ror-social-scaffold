@@ -22,17 +22,23 @@ RSpec.feature 'Friendships', type: :feature do
 
   it 'should let the user send a friend request' do
     expect(page).to have_content('Send Friend Request')
+    click_on('Send Friend Request')
+    expect(page).to have_content('You have sent a friend request successfully!')
   end
 
   it 'should let the user accept a friend request' do
     Friendship.create(user_id: user2.id, friend_id: user1.id, status: -1)
     click_link(user1.name)
     expect(page).to have_content('Accept')
+    click_on('Accept')
+    expect(page).to have_content('You have become friends!')
   end
 
   it 'should let the user reject a friend request' do
     Friendship.create(user_id: user2.id, friend_id: user1.id, status: -1)
     click_link(user1.name)
     expect(page).to have_content('Delete')
+    click_on('Delete')
+    expect(page).to have_content('You have deleted friend request!')
   end
 end
