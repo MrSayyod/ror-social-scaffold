@@ -21,13 +21,6 @@ class User < ApplicationRecord
   has_many :confirmed_friendships, -> { where(status: 1) }, class_name: 'Friendship'
   has_many :friends, through: :confirmed_friendships
 
-  def friends
-    friends_array = []
-    friendships.map { |friendship| friends_array.push(friendship.friend) if friendship.status == 1 }
-    inverse_friendships.map { |friendship| friends_array.push(friendship.user) if friendship.status == 1 }
-    friends_array
-  end
-
   def friend?(user)
     friends.include?(user)
   end
