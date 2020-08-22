@@ -18,7 +18,7 @@ class User < ApplicationRecord
   has_many :incoming_friendships, -> { where(status: -1) }, class_name: 'Friendship', foreign_key: :friend_id
   has_many :friend_requests, through: :incoming_friendships, source: :user
 
-  has_many :confirmed_friendships, -> { where(status: 1) }, class_name: "Friendship"
+  has_many :confirmed_friendships, -> { where(status: 1) }, class_name: 'Friendship'
   has_many :friends, through: :confirmed_friendships
 
   def friends
@@ -50,6 +50,6 @@ class User < ApplicationRecord
   end
 
   def friends_and_own_posts
-    Post.where(user: (self.friends + self))
+    Post.where(user: (friends + self))
   end
 end
