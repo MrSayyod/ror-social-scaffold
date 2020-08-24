@@ -9,7 +9,7 @@
 
 ## Live Demo
 
-[Live version](https://desolate-shelf-81787.herokuapp.com/)
+[Live version on Heroku](https://desolate-shelf-81787.herokuapp.com/)
 
 
 ## Getting Started
