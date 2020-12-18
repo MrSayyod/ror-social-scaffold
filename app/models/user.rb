@@ -18,12 +18,8 @@ class User < ApplicationRecord
   has_many :incoming_friendships, -> { where(status: -1) }, class_name: 'Friendship', foreign_key: :friend_id
   has_many :friend_requests, through: :incoming_friendships, source: :user
 
-  def friends
-    friends_array = []
-    friendships.map { |friendship| friends_array.push(friendship.friend) if friendship.status == 1 }
-    inverse_friendships.map { |friendship| friends_array.push(friendship.user) if friendship.status == 1 }
-    friends_array
-  end
+  has_many :confirmed_friendships, -> { where(status: 1) }, class_name: 'Friendship'
+  has_many :friends, through: :confirmed_friendships
 
   def friend?(user)
     friends.include?(user)
@@ -44,5 +40,9 @@ class User < ApplicationRecord
   def send_friend_request(user, friend)
     new_friend_request = user.friendships.new(friend_id: friend.id, status: -1)
     new_friend_request.save
+  end
+
+  def friends_and_own_posts
+    Post.where(user: (friends + self))
   end
 end
